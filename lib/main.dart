@@ -85,14 +85,8 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
                     terminal.write('the process exited with exit code $code');
                     }),
                   terminal.onOutput = (data) {
-                      try {
-                        dynamic conv= const Utf8Encoder().convert(data);
-                        pty.write(conv);
-                      } catch (e) {
-                        if (kDebugMode) {
-                          print(e);
-                        }
-                      }
+                      dynamic conv= const Utf8Encoder().convert(data);
+                      pty.write(conv);
                     },
                   terminal.onResize = (w, h, pw, ph) {
                       pty.resize(h, w);
