@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tabbed_view/tabbed_view.dart';
 import 'package:flutter_pty/flutter_pty.dart';
 import 'package:xterm/xterm.dart';
-
+// import 'package:flutter/src/widgets/basic.dart';
+import 'package:flutter/src/widgets/safe_area.dart';
 void main() {
   runApp(TabbedViewExample());
 }
@@ -34,10 +36,8 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
     _controller = TabbedViewController(tabs);
     
   }
-  @override
   Future<Pty> attach({
-    int width = 80,
-    int height = 25,
+    Terminal? terminal,
     Map<String, String>? environment,
   }) async {
     final shell = _platformShell;
@@ -45,8 +45,8 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
       shell.command,
       arguments: shell.args,
       environment: {...Platform.environment, ...environment ?? {}},
-      rows: height,
-      columns: width,
+      rows: terminal?.viewHeight ?? 60,
+      columns: terminal?.viewWidth ?? 80,
     );
     return pty;
   }
@@ -65,24 +65,38 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
                 int millisecond = DateTime.now().millisecondsSinceEpoch;
                 _controller.addTab(TabData(
                   text: '$millisecond',
-                  content: TerminalView(
+                  content: SafeArea(child: ClipRect(child: TerminalView(
                         terminal,
                         controller: terminalController,
-                        autofocus: true,
+                        autofocus: false,
                         backgroundOpacity: 0.8,
-                      ),
+                      ))),  
                   keepAlive: true,
                   
                 ));
                 _controller.selectedIndex=_controller.tabs.length-1;
-                attach(width: terminal.viewWidth,height: terminal.viewHeight).then((pty) => {
+                attach(terminal: terminal).then((pty) => {
                   pty.output
                     .cast<List<int>>()
-                    .transform(Utf8Decoder())
+                    .transform(const Utf8Decoder())
                     .listen(terminal.write),
+                  
                   pty.exitCode.then((code) {
                     terminal.write('the process exited with exit code $code');
-                    })
+                    }),
+                  terminal.onOutput = (data) {
+                      try {
+                        dynamic conv= const Utf8Encoder().convert(data);
+                        pty.write(conv);
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print(e);
+                        }
+                      }
+                    },
+                  terminal.onResize = (w, h, pw, ph) {
+                      pty.resize(h, w);
+                    }
                   });
                   
               }));
@@ -98,7 +112,7 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
           return buttons;
         });
     Widget w =
-        TabbedViewTheme(child: tabbedView, data: TabbedViewThemeData.mobile());
+        TabbedViewTheme(data: TabbedViewThemeData.dark(), child: tabbedView);
     return Scaffold(body: Container(child: w));
   }
 }
