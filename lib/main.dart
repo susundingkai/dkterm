@@ -34,7 +34,6 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
     super.initState();
     List<TabData> tabs = [];
     _controller = TabbedViewController(tabs);
-    
   }
   Future<Pty> attach({
     Terminal? terminal,
@@ -52,6 +51,7 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
   }
   @override
   Widget build(BuildContext context) {
+
     // TabbedView tabbedView = TabbedView(controller: _controller);
         TabbedView tabbedView = TabbedView(
         controller: _controller,
@@ -59,7 +59,7 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
           List<TabButton> buttons = [];
           buttons.add(TabButton(
               icon: IconProvider.data(Icons.add),
-              onPressed: () {
+              onPressed: () async {
                 var terminal = Terminal(maxLines: 10000,);
                 var terminalController = TerminalController();
                 int millisecond = DateTime.now().millisecondsSinceEpoch;
@@ -75,7 +75,8 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
                   
                 ));
                 _controller.selectedIndex=_controller.tabs.length-1;
-                attach(terminal: terminal).then((pty) => {
+                print(DateTime.now().millisecondsSinceEpoch);
+                attach(terminal: terminal).then((pty) => { ////////////////////////////////////////////////
                   pty.output
                     .cast<List<int>>()
                     .transform(const Utf8Decoder())
@@ -92,7 +93,7 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
                       pty.resize(h, w);
                     }
                   });
-                  
+                print(DateTime.now().millisecondsSinceEpoch);
               }));
           if (tabsCount > 0) {
             buttons.add(TabButton(
