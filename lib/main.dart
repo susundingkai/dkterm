@@ -47,6 +47,8 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
       rows: terminal?.viewHeight ?? 60,
       columns: terminal?.viewWidth ?? 80,
     );
+    print("end");
+    print(DateTime.now().millisecondsSinceEpoch);
     return pty;
   }
   @override
