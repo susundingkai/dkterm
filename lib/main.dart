@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +37,7 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
     List<TabData> tabs = [];
     _controller = TabbedViewController(tabs);
   }
+  @riverpod
   Future<Pty> attach({
     Terminal? terminal,
     Map<String, String>? environment,
@@ -78,6 +81,7 @@ class _TabbedViewExamplePageState extends State<TabbedViewExamplePage> {
                 ));
                 _controller.selectedIndex=_controller.tabs.length-1;
                 print(DateTime.now().millisecondsSinceEpoch);
+                
                 attach(terminal: terminal).then((pty) => { ////////////////////////////////////////////////
                   pty.output
                     .cast<List<int>>()
