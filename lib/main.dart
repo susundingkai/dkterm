@@ -60,22 +60,22 @@ class _TabbedViewExamplePageState extends ConsumerState<TabbedViewExamplePage> {
               icon: IconProvider.data(Icons.add),
               onPressed: () async {
                 var terminal = Terminal(maxLines: 10000,);
-                var terminalController = TerminalController();
-                int millisecond = DateTime.now().millisecondsSinceEpoch;
-                _controller.addTab(TabData(
-                  text: '$millisecond',
-                  content: SafeArea(child: ClipRect(child: TerminalView(
-                        terminal,
-                        controller: terminalController,
-                        autofocus: false,
-                        backgroundOpacity: 0.8,
-                      ))),  
-                  keepAlive: true,
+
+                // int millisecond = DateTime.now().millisecondsSinceEpoch;
+                // _controller.addTab(TabData(
+                //   text: '$millisecond',
+                //   content: SafeArea(child: ClipRect(child: TerminalView(
+                //         terminal,
+                //         controller: terminalController,
+                //         autofocus: false,
+                //         backgroundOpacity: 0.8,
+                //       ))),  
+                //   keepAlive: true,
                   
-                ));
+                // ));
+                // _controller.selectedIndex=_controller.tabs.length-1;
+                ref.read(connServiceProvider.notifier).openTerminal(terminal,null,_controller);
                 _controller.selectedIndex=_controller.tabs.length-1;
-                // print(DateTime.now().millisecondsSinceEpoch);
-                ref.read(connServiceProvider).openTerminal(terminal,null);
               }));
           if (tabsCount > 0) {
             buttons.add(TabButton(
